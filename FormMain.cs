@@ -299,8 +299,8 @@ namespace ProductInfoReader
                 sqlParamList.Add(new SqlParameter("@SN", this.textBoxSN.Text));
                 int count = 0;
 
-                count = Convert.ToInt32(helper.ExecuteScalar(@"SELECT COUNT([ID]) FROM[PostKey]
-                where[key] = @KEY and[sn] != @SN and[IsValid] = 'true'", CommandType.Text, sqlParamList.ToArray()));
+                count = Convert.ToInt32(helper.ExecuteScalar(@"SELECT COUNT([ID]) FROM [PostKey]
+                where [key] = @KEY and [sn] != @SN and [IsValid] = 'true'", CommandType.Text, sqlParamList.ToArray()));
 
                 if (count > 0)
                 {
