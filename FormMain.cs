@@ -203,7 +203,6 @@ namespace ProductInfoReader
             {
                 this.product_key = ProductInfoReader.GetWindowsProductKey();
                 this.product_id = ProductInfoReader.GetWindowsProductId();
-                //MessageBox.Show(product_id.ToString());
                 this.Invoke(new MyDelegate(updateUI), MSG_UPDATE_PRODUCT_KEY);
             }
             catch (Exception)
@@ -296,9 +295,22 @@ namespace ProductInfoReader
                 DBHelper helper = new DBHelper(dbType, dbSource, dbUserId, dbPassword, dbName, dbIntegratedSecurity);
 
                 List<IDbDataParameter> sqlParamList = new List<IDbDataParameter>();
-
+                sqlParamList.Add(new SqlParameter("@KEY", this.textBoxProductKey.Text));
                 sqlParamList.Add(new SqlParameter("@SN", this.textBoxSN.Text));
+                int count = 0;
 
+                count = Convert.ToInt32(helper.ExecuteScalar(@"SELECT COUNT([ID]) FROM[PostKey]
+                where[key] = @KEY and[sn] != @SN and[IsValid] = 'true'", CommandType.Text, sqlParamList.ToArray()));
+
+                if (count > 0)
+                {
+                    MessageBox.Show("无法重复提交相同的密钥！", "提交失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                sqlParamList = new List<IDbDataParameter>();
+                sqlParamList.Add(new SqlParameter("@KEY", this.textBoxProductKey.Text));
+                sqlParamList.Add(new SqlParameter("@SN", this.textBoxSN.Text));
                 object result = helper.ExecuteScalar(@"SELECT [IsValid] FROM [PostKey] 
                                     where [sn]=@SN", CommandType.Text, sqlParamList.ToArray());
 
@@ -312,7 +324,7 @@ namespace ProductInfoReader
                 sqlParamList.Add(new SqlParameter("@IMEI", this.textBoxImei.Text));
                 sqlParamList.Add(new SqlParameter("@POST_TIME", DateTime.Now));
                 sqlParamList.Add(new SqlParameter("@ProductKeyID", this.product_id));
-                int count = 0;
+
                 if (result == null )
                 {
                     count = helper.ExecuteNonQuery(@"INSERT INTO [PostKey] 

@@ -81,7 +81,6 @@ namespace ProductInfoReader
 
         public static string getIMEI()
         {
-            //return "1234567890123";
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo.FileName = "netsh.exe";
             process.StartInfo.UseShellExecute = false;
